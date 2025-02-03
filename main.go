@@ -5,21 +5,33 @@ import (
 	"net/http"
 )
 
-func mainPage(res http.ResponseWriter, req *http.Request) {
+func mainHandler(res http.ResponseWriter, req *http.Request) {
 	res.Write([]byte("Welcome buddy!"))
 }
 
-func apiPage(res http.ResponseWriter, req *http.Request) {
+func apiHandler(res http.ResponseWriter, req *http.Request) {
 	res.Write([]byte("welcome to the api page!"))
+}
+
+func apiAuthHandler(res http.ResponseWriter, req *http.Request) {
+	res.Write([]byte("Welcome to api/auth page..."))
+}
+
+func clientHandler(res http.ResponseWriter, req *http.Request) {
+	res.Write([]byte("Welcome to client page!"))
 }
 
 func main() {
 	log.Println("dummy service is up!")
 
-	http.HandleFunc("/", mainPage)
-	http.HandleFunc("/api", apiPage)
+	mux := http.NewServeMux()
 
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	mux.HandleFunc("/", mainHandler)
+	mux.HandleFunc("/client/", clientHandler)
+	mux.HandleFunc("/api/", apiHandler)
+	mux.HandleFunc("/api/auth", apiAuthHandler)
+
+	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Fatal(err)
 	}
 }
