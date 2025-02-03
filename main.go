@@ -5,17 +5,21 @@ import (
 	"net/http"
 )
 
-type Handler struct{}
+func mainPage(res http.ResponseWriter, req *http.Request) {
+	res.Write([]byte("Welcome buddy!"))
+}
 
-func (h Handler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
-	data := []byte("Hello world!")
-	res.Write(data)
+func apiPage(res http.ResponseWriter, req *http.Request) {
+	res.Write([]byte("welcome to the api page!"))
 }
 
 func main() {
 	log.Println("dummy service is up!")
-	var h Handler
-	if err := http.ListenAndServe(":8080", h); err != nil {
+
+	http.HandleFunc("/", mainPage)
+	http.HandleFunc("/api", apiPage)
+
+	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}
 }
