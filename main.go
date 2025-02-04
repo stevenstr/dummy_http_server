@@ -3,9 +3,52 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 )
+
+const form = `<html>
+    <head>
+    <title></title>
+    </head>
+    <body>
+        <form action="/" method="post">
+            <label>Логин</label><input type="text" name="login">
+            <label>Пароль<input type="password" name="password">
+            <input type="submit" value="Login">
+        </form>
+    </body>
+</html>`
+
+type User struct {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+}
+
+func auth(login, password string) bool {
+	return login == "lok" && password == "lok"
+}
+
+func authHandler(res http.ResponseWriter, req *http.Request) {
+	if req.Method == http.MethodGet {
+		io.WriteString(res, form)
+		return
+	}
+
+	if req.Method == http.MethodPost {
+		if err := req.ParseForm(); err != nil {
+			res.Write([]byte(err.Error()))
+			return
+		}
+		if auth(req.FormValue("login"), req.FormValue("password")) {
+			res.Write([]byte("Hello" + req.FormValue("login") + "!"))
+			return
+		}
+	}
+
+	http.Error(res, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+}
 
 func mainHandler(res http.ResponseWriter, req *http.Request) {
 	res.Write([]byte("Welcome buddy!\n"))
@@ -31,11 +74,6 @@ func mainHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	res.Write([]byte(body))
-}
-
-type User struct {
-	Name string `json:"name"`
-	Age  int    `json:"age"`
 }
 
 func jsonHandler(res http.ResponseWriter, req *http.Request) {
@@ -70,7 +108,8 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", mainHandler)
+	// mux.HandleFunc("/", mainHandler)
+	mux.HandleFunc("/", authHandler)
 	mux.HandleFunc("GET /client/", clientHandler)
 	mux.HandleFunc("GET /api/", apiHandler)
 	mux.HandleFunc("GET /api/auth", apiAuthHandler)
