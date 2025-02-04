@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -32,6 +33,25 @@ func mainHandler(res http.ResponseWriter, req *http.Request) {
 	res.Write([]byte(body))
 }
 
+type User struct {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+}
+
+func jsonHandler(res http.ResponseWriter, req *http.Request) {
+	swaffard := User{Name: "Sergant", Age: 18}
+
+	jsn, err := json.Marshal(swaffard)
+	if err != nil {
+
+	}
+
+	res.Header().Set("content-type", "application/json")
+	res.WriteHeader(http.StatusOK)
+
+	res.Write(jsn)
+}
+
 func apiHandler(res http.ResponseWriter, req *http.Request) {
 	res.Write([]byte("welcome to the api page!"))
 }
@@ -53,6 +73,7 @@ func main() {
 	mux.HandleFunc("GET /client/", clientHandler)
 	mux.HandleFunc("GET /api/", apiHandler)
 	mux.HandleFunc("GET /api/auth", apiAuthHandler)
+	mux.HandleFunc("GET /json", jsonHandler)
 
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Fatal(err)
