@@ -103,6 +103,12 @@ func clientHandler(res http.ResponseWriter, req *http.Request) {
 	res.Write([]byte("Welcome to client page!"))
 }
 
+func dummePrinter(res http.ResponseWriter, req *http.Request) {
+	res.Write([]byte("1"))
+	io.WriteString(res, "2")
+	fmt.Fprintln(res, "3")
+}
+
 func main() {
 	log.Println("dummy service is up!")
 
@@ -110,6 +116,7 @@ func main() {
 
 	// mux.HandleFunc("/", mainHandler)
 	mux.HandleFunc("/", authHandler)
+	mux.HandleFunc("GET /dummy", dummePrinter)
 	mux.HandleFunc("GET /client/", clientHandler)
 	mux.HandleFunc("GET /api/", apiHandler)
 	mux.HandleFunc("GET /api/auth", apiAuthHandler)
