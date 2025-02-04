@@ -116,6 +116,7 @@ func main() {
 
 	// mux.HandleFunc("/", mainHandler)
 	mux.HandleFunc("/", authHandler)
+	mux.HandleFunc("GET /main", mainHandler)
 	mux.HandleFunc("GET /dummy", dummePrinter)
 	mux.HandleFunc("GET /client/", clientHandler)
 	mux.HandleFunc("GET /api/", apiHandler)
