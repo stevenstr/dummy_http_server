@@ -18,9 +18,14 @@ func mainHandler(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
+	if err := req.ParseForm(); err != nil {
+		res.Write([]byte(err.Error()))
+		return
+	}
+
 	body += fmt.Sprintln()
 	body += fmt.Sprintln("Request querry:")
-	for k, v := range req.URL.Query() {
+	for k, v := range req.Form {
 		body += fmt.Sprintf("   %s: %s\n", k, v)
 	}
 
