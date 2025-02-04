@@ -43,7 +43,8 @@ func jsonHandler(res http.ResponseWriter, req *http.Request) {
 
 	jsn, err := json.Marshal(swaffard)
 	if err != nil {
-
+		http.Error(res, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	res.Header().Set("content-type", "application/json")
