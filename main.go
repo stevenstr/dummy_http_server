@@ -127,6 +127,10 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "https://belta.by", http.StatusMovedPermanently) // 301
 }
 
+func fileHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "./main.go")
+}
+
 func main() {
 	log.Println("dummy service is up!")
 
@@ -142,11 +146,13 @@ func main() {
 	mux.HandleFunc("GET /news", searchHandler)
 
 	// ready to use handlers for default mux
-	http.Handle("GET /main1", middlewarelog(middlewareprint(http.HandlerFunc(mainHandler))))
-	http.Handle("GET /redir", http.RedirectHandler("https://belta.by", http.StatusMovedPermanently))
-	http.Handle("GET /404", http.NotFoundHandler())
+	// http.Handle("GET /main1", middlewarelog(middlewareprint(http.HandlerFunc(mainHandler))))
+	// http.Handle("GET /redir", http.RedirectHandler("https://belta.by", http.StatusMovedPermanently))
+	// http.Handle("GET /404", http.NotFoundHandler())
 
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	mux.HandleFunc("GET /golang", fileHandler)
+
+	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Fatal(err)
 	}
 }
