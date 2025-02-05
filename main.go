@@ -123,6 +123,10 @@ func middlewareprint(next http.Handler) http.Handler {
 	})
 }
 
+func searchHandler(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "https://belta.by", http.StatusMovedPermanently) // 301
+}
+
 func main() {
 	log.Println("dummy service is up!")
 
@@ -130,14 +134,15 @@ func main() {
 
 	mux.HandleFunc("/", authHandler)
 	mux.HandleFunc("GET /main", mainHandler)
-	http.Handle("GET /main1", middlewarelog(middlewareprint(http.HandlerFunc(mainHandler))))
+	// http.Handle("GET /main1", middlewarelog(middlewareprint(http.HandlerFunc(mainHandler))))
 	mux.HandleFunc("GET /dummy", dummePrinter)
 	mux.HandleFunc("GET /client/", clientHandler)
 	mux.HandleFunc("GET /api/", apiHandler)
 	mux.HandleFunc("GET /api/auth", apiAuthHandler)
 	mux.HandleFunc("GET /json", jsonHandler)
+	mux.HandleFunc("GET /news", searchHandler)
 
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Fatal(err)
 	}
 }
