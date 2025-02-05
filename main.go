@@ -134,7 +134,6 @@ func main() {
 
 	mux.HandleFunc("/", authHandler)
 	mux.HandleFunc("GET /main", mainHandler)
-	// http.Handle("GET /main1", middlewarelog(middlewareprint(http.HandlerFunc(mainHandler))))
 	mux.HandleFunc("GET /dummy", dummePrinter)
 	mux.HandleFunc("GET /client/", clientHandler)
 	mux.HandleFunc("GET /api/", apiHandler)
@@ -142,7 +141,12 @@ func main() {
 	mux.HandleFunc("GET /json", jsonHandler)
 	mux.HandleFunc("GET /news", searchHandler)
 
-	if err := http.ListenAndServe(":8080", mux); err != nil {
+	// ready to use handlers for default mux
+	http.Handle("GET /main1", middlewarelog(middlewareprint(http.HandlerFunc(mainHandler))))
+	http.Handle("GET /redir", http.RedirectHandler("https://belta.by", http.StatusMovedPermanently))
+	http.Handle("GET /404", http.NotFoundHandler())
+
+	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}
 }
