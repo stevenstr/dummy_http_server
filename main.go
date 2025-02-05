@@ -109,21 +109,35 @@ func dummePrinter(res http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(res, "3")
 }
 
+func middlewarelog(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Side log from middleware....\n"))
+		next.ServeHTTP(w, r)
+	})
+}
+
+func middlewareprint(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("PRINT....\n"))
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	log.Println("dummy service is up!")
 
 	mux := http.NewServeMux()
 
-	// mux.HandleFunc("/", mainHandler)
 	mux.HandleFunc("/", authHandler)
 	mux.HandleFunc("GET /main", mainHandler)
+	http.Handle("GET /main1", middlewarelog(middlewareprint(http.HandlerFunc(mainHandler))))
 	mux.HandleFunc("GET /dummy", dummePrinter)
 	mux.HandleFunc("GET /client/", clientHandler)
 	mux.HandleFunc("GET /api/", apiHandler)
 	mux.HandleFunc("GET /api/auth", apiAuthHandler)
 	mux.HandleFunc("GET /json", jsonHandler)
 
-	if err := http.ListenAndServe(":8080", mux); err != nil {
+	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}
 }
