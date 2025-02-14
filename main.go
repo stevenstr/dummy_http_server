@@ -144,7 +144,6 @@ func main() {
 	mux.HandleFunc("GET /api/auth", apiAuthHandler)
 	mux.HandleFunc("GET /json", jsonHandler)
 	mux.HandleFunc("GET /news", searchHandler)
-
 	// ready to use handlers for default mux
 	// http.Handle("GET /main1", middlewarelog(middlewareprint(http.HandlerFunc(mainHandler))))
 	// http.Handle("GET /redir", http.RedirectHandler("https://belta.by", http.StatusMovedPermanently))
